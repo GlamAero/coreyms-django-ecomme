@@ -1,0 +1,50 @@
+Super User:
+Username: Aerosmart1
+Password: Ayobami1
+
+
+Other users:
+Username: Aerosmart4
+Password: Ayobami4
+
+THE PROJECT IS ACCESSIBLE ON WSL(Linux subsystem on VSC). It is available when on wsl of vsc you 'cd' into 'django_projects/codemy_ecommerce_django' from the 'root@Glamos' terminal point.
+
+Type the git commands below after:
+linking the .ssh folder created with my GitHub account in my profile's settings. You will see the ssh link after clicking the 'settings' in my GitHub profile page. Fill the 'pub' value result(got by typing the command: 'ssh-keygen' in the command prompt) in the ssh link section of the GitHub profile settings.
+
+a. The virtual environment to be activated for wsl is 'venv' and not 'virt'
+b. 'virt' virtual environment is for the normal windows powershell or cmd line. 
+
+FOR GIT COMMAND:
+1. git config --global user.name "Ayodeji Teju-Ojo" 
+2. git config --global user.email "aerotrade001@gmail.com"
+3. git config --global push.default matching
+4. git config --global alias.co checkout
+5. git init
+6. git add .
+7. git commit -am 'Initial Commit'
+
+* THE BELOW CAN BE SEEN AFTER CREATING A REPOSITORY ON THE GITHUB WEBSITE: 
+8. git remote add origin https://github.com/GlamAero/codemy-django-ecommerce.git
+9. git branch -M main
+10. git push -u origin main
+
+
+Note: The 'update_user.html' is used to automatically create a profile for the new user(check the models.py file for the automation using signal 'post_save()' imported). 
+
+The 'update_info.html' is used to update the created profile to add additional information like the 'shipping information'.
+
+- 'session' is created on the browser when you interact with a website. A sessionid is created per session one visits.
+
+
+FOR LINUX SUBSYSTEM TO WORK FOR DEPLOYMENT:
+sudo apt update
+sudo apt install python3.12-venv
+python3.12 -m venv venv
+source venv/bin/activate
+
+
+
+
+
+ 

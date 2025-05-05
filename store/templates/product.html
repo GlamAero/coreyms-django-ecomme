@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container">
+        <br>
+        {% comment %} the below is got from bootstrap website on the card section {% endcomment %}
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <center>
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text justified">{{ product.description }}</p>
+
+                            {% if product.is_sale %}
+                                <!-- Product reviews-->
+                                <div class="d-flex justify-content-center small text-warning mb-2">
+                                    <div class="bi-star-fill"></div>
+                                    &nbsp;&nbsp;Sale!&nbsp;&nbsp;
+                                    <div class="bi-star-fill"></div>
+                                </div>
+
+                                <!-- Product price-->
+                                <strike>
+                                    ${{ product.price }}
+                                </strike>
+                                &nbsp;
+                                ${{ product.sale_price }}
+                            {% else %}
+                                ${{ product.price }}
+                            {% endif %}
+
+                            <br><br>
+
+                            <!--From bootstrap.com: form and select-->
+                            <div class="row justify-content-center">
+                                <div class="col-md-2">Quantity:</div>
+                                <div class="col-md-2">
+                                    <!--Note the 'id="qty-cart"'. It is used in the javascript ajax section down this page-->
+                                    <select class="form-select form-select-sm" id="qty-cart"> 
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <br><br>
+
+                            <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+                            <br><br>
+                            <button type="button" class="btn btn-secondary" value="{{ product.id }}" id="add-cart">Add To Cart</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<script type="text/javascript">
+
+// Add product to cart
+// Check if button is pressed
+$(document).on('click', '#add-cart', function(e){
+    e.preventDefault(); // prevents the default behaviour of reloading of the page
+
+    $.ajax({
+        type: 'POST',
+        url: "{% url "cart_add" %}",
+        data: {
+            product_id: $('#add-cart').val(), // '#add-cart' is an id referenced from above on this page
+            product_qty: $('#qty-cart option:selected').text(), // 'qty-cart' is an id referenced from above on this page
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+        success: function(json){
+            // for the cart icon on the navbar to work:
+            // from navbar.html get the id = 'cart_quantity' in the cart icon area where is it referenced from.
+            // 'qty' is referenced from the cart/views.py file in the cart_add function, as the length of the cart in quantity. That is the number of products in the cart.
+            document.getElementById("cart_quantity").textContent = json.qty
+            location.reload(); 
+
+        },
+        error: function(xhr, errmsg, err){
+            
+        }
+    });
+})
+</script>
+{% endblock %}

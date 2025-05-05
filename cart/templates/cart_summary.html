@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Shopping Cart</h1>
+                <p class="lead fw-normal text-white-50 mb-0">View Your Cart...</p>
+            </div>
+        </div>
+    </header>
+    <br>
+    <div class="container">
+        {% if cart_products %}
+
+            {% for product in cart_products %}
+                
+                <!-- The below is the Product card got from 'product.html' page in 'store' app folder, and edited thereafter-->
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <center>
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <p class="card-text justified">{{ product.description }}</p>
+
+                                    {% if product.is_sale %}
+                                        <!-- Product reviews-->
+                                        <div class="d-flex justify-content-center small text-warning mb-2">
+                                            <div class="bi-star-fill"></div>
+                                            &nbsp;&nbsp;Sale!&nbsp;&nbsp;
+                                            <div class="bi-star-fill"></div>
+                                        </div>
+
+                                        <!-- Product price-->
+                                        <strike>
+                                            ${{ product.price }}
+                                        </strike>
+                                        &nbsp;
+                                        ${{ product.sale_price }}
+                                    {% else %}
+                                        ${{ product.price }}
+                                        <br>
+                                    {% endif %}
+
+                                    <br><br>
+                                    <!--The below is got from the 'product.html' page of the store app-->
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-2">Quantity:</div>
+                                        <div class="col-md-2">
+                                            <!--Note the 'id="select{{ product.id }}"'. It is used in the javascript ajax section down the 'product.html' page of store app-->
+                                            <select class="form-select form-select-sm" id="select{{ product.id }}">
+
+                                                <!--'quantities' is a dictionary(self.cart) containing the product id and the quantity. 'quantities.items' because we are looping through is a dictionary. -->
+                                                {% for key, value in quantities.items %}
+                                                    <!--'slugify' is used to convert the 'string': product.id to 'integer'-->
+                                                    {% if key == product.id|slugify %}
+                                                        <!--'value' below is the 'quantity' of the product in the cart-->
+                                                        <option selected>{{ value }}</option>
+                                                    {% endif %}
+
+                                                {% endfor %} 
+
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                        
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br><br>
+
+                                    <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+
+                                    {% comment %} 'data-index' is similar to using 'value' but a little different. It is unique per product. {% endcomment %}
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-secondary update-cart">Update</button>
+
+                                    {% comment %} 'data-index' is similar to using 'value' but a little different. It is unique per product. {% endcomment %}
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-danger delete-product">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+            <br>
+
+            <div align="right">
+                <h3>Total: ${{ totals }}</h3>
+                <a href="{% url 'checkout' %}" class="btn btn-success">Checkout</a>
+            </div>
+            <br><br>
+
+        {% else %}
+        
+            <h2>Your cart is empty</h2>
+            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+        {% endif %}
+    </div>
+
+
+    <script type="text/javascript">
+
+        // THIS CODE IS COPIED FROM 'PRODUCT.HTML' PAGE IN THE STORE APP TEMPLATE FOLDER. THEN IT IS EDITED:
+
+        // Update Cart, especially quantity
+        $(document).on('click', '.update-cart', function(e){
+            e.preventDefault(); // prevents the default behaviour of reloading of the page
+        
+            // Grab the product id. data-index holds the product id as above as product.id:
+            var productid = $(this).data('index');
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url "cart_update" %}",
+                data: {
+                    product_id: $(this).data('index'), // data-index is referenced from the button(update) that is above, on this page
+                    product_qty: $('#select' + productid + ' option:selected').text(), // 'qty-cart' is referenced from above on this page
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json){
+                    location.reload(); // this will reload the page after the ajax request is successful
+                },
+
+                error: function(xhr, errmsg, err){
+                    
+                }
+            });
+        })
+
+// ------------------------------------------------------------------------------------
+
+        // Delete Item From Cart
+        $(document).on('click', '.delete-product', function(e){
+            e.preventDefault(); // prevents the default behaviour of reloading of the page
+
+            $.ajax({
+                type: 'POST',
+                url: "{% url "cart_delete" %}",
+                data: {
+                    product_id: $(this).data('index'),  // data-index is referenced from the button(update) that is above, on this page
+
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json){
+                    location.reload(); // this will reload the page after the ajax request is successful
+                },
+
+                error: function(xhr, errmsg, err){
+                    
+                }
+            });
+        })
+
+    </script>
+{% endblock %}
