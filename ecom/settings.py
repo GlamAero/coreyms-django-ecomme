@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-cwo-09^lp9rqqw70x9vq2gggzk)d^7lz(5boux!ojpjgmpa2h_
 DEBUG = True
 
 ALLOWED_HOSTS = ['coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://coreyms-django-ecomme-production.up.railway.app']
 
 
 # Application definition
