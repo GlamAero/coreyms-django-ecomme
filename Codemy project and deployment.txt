@@ -12,6 +12,9 @@ THE PROJECT IS ACCESSIBLE ON WSL(Linux subsystem on VSC). It is available when o
 Type the git commands below after:
 linking the .ssh folder created with my GitHub account in my profile's settings. You will see the ssh link after clicking the 'settings' in my GitHub profile page. Fill the 'pub' value result(got by typing the command: 'ssh-keygen' in the command prompt) in the ssh link section of the GitHub profile settings.
 
+I used 'cloudfare' for firewall when creating a domain name: 'glamossscouture.store'
+cloudfare 
+
 a. The virtual environment to be activated for wsl is 'venv' and not 'virt'
 b. 'virt' virtual environment is for the normal windows powershell or cmd line. 
 
