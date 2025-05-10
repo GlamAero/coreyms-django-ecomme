@@ -295,7 +295,7 @@ def billing_info(request):
         
 
 	    # Create actual paypal button:
-        paypal_form = PayPalPaymentsForm(intial=paypal_dict)
+        paypal_form = PayPalPaymentsForm(initial=paypal_dict)
 
         #Check if the user is logged in: 
         # In the below: 'shipping_info' takes the value of 'request.POST'.
