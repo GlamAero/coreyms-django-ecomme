@@ -287,7 +287,7 @@ def billing_info(request):
         'item_name': 'Book Order',
         'no_shipping': '2',  # '2' means that paypal will not use the shipping information supplied by the user during registration at paypal website because the order made may not be for the current user but for another person, e.g his parent.
         'invoice': str(uuid.uuid4()), # this ensures no two orders have the same id
-        'currency_code': 'NGR', # NGR for Naira
+        'currency_code': 'USD', # USD for Naira
         'notify_url': 'https://{}{}'.format(host, reverse("paypal-ipn")),
         'return_url': 'https://{}{}'.format(host, reverse("payment_success")),
         'cancel_url': 'https://{}{}'.format(host, reverse("payment_failed")),
