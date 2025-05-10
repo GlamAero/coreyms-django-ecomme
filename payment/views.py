@@ -289,8 +289,8 @@ def billing_info(request):
         'invoice': str(uuid.uuid4()), # this ensures no two orders have the same id
         'currency_code': 'NGR', # NGR for Naira
         'notify_url': 'https://{}{}'.format(host, reverse("paypal-ipn")),
-        'return_url': 'https://{}{}'.format(host, reverse("payment-success")),
-        'cancel_url': 'https://{}{}'.format(host, reverse("payment-failed")),
+        'return_url': 'https://{}{}'.format(host, reverse("payment_success")),
+        'cancel_url': 'https://{}{}'.format(host, reverse("payment_failed")),
         }
         
 
