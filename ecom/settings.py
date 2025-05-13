@@ -14,18 +14,19 @@ from pathlib import Path
 import os
 
 # Load environment variable for localhost:
-from dotenv import load_dotenv
-load_dotenv()
+#from dotenv import load_dotenv
+#load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Password for localhost:
-DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
 
 # Password for 'postgres' DB:
-# DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
+DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
+
+# Password for localhost:
+# DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
