@@ -6,5 +6,5 @@ class PaymentConfig(AppConfig):
     name = 'payment'
 
     # Set up Paypal signal IPN:
-    def ready(self):
-        import payment.hooks 
+    # def ready(self):
+    #     import payment.hooks 
