@@ -18,7 +18,7 @@ import os
 #load_dotenv()
 
 # Password for localhost:
-# DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
+#DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
 
 # Password for 'postgres' DB:
 DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
