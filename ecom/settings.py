@@ -13,13 +13,20 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 
+# Load environment variable for localhost:
 #from dotenv import load_dotenv
+#load_dotenv()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables:
-#load_dotenv()
+
+# Password for 'postgres' DB:
+DB_PASSWORD_YO = os.environ['DB_PASSWORD_YO']
+
+# Password for localhost:
+# DB_PASSWORD_YO = os.environ.get('DB_PASSWORD_YO')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -30,8 +37,8 @@ SECRET_KEY = 'django-insecure-cwo-09^lp9rqqw70x9vq2gggzk)d^7lz(5boux!ojpjgmpa2h_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://glamossscouture.store', 'glamossscouture.store', 'coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app']
-CSRF_TRUSTED_ORIGINS = ['https://glamossscouture.store', 'https://coreyms-django-ecomme-production.up.railway.app']
+ALLOWED_HOSTS = ['https://glamossscouture.store', 'glamossscouture.store', 'coreyms-django-ecomme-production.up.railway.app', 'https://coreyms-django-ecomme-production.up.railway.app', 'localhost', 'd919-102-91-4-27.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://glamossscouture.store', 'https://coreyms-django-ecomme-production.up.railway.app', 'https://d919-102-91-4-27.ngrok-free.app']
 
 
 # Application definition
@@ -90,7 +97,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'railway',
         'USER': 'postgres',
-        'PASSWORD': os.environ['DB_PASSWORD_YO'],
+        'PASSWORD': DB_PASSWORD_YO, # 'DB_PASSWORD_YO' value is obtained above on this page 
         'HOST': 'caboose.proxy.rlwy.net',
         'PORT': '46568',
     }

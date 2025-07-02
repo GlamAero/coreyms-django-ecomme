@@ -145,7 +145,6 @@ def process_order(request):
         # Create Shipping Address from session info:
         # We used f"" string because the data is much:
         shipping_address = f"{my_shipping['shipping_address1']}\n{my_shipping['shipping_address2']}\n{my_shipping['shipping_city']}\n{my_shipping['shipping_state']}\n{my_shipping['shipping_zipcode']}\n{my_shipping['shipping_country']}"
-
         amount_paid = totals
 
         # Create an Order:
@@ -277,20 +276,34 @@ def billing_info(request):
         # In the below,'my_shipping' is now a session that holds the 'ShippingForm' data filled by the user in the 'checkout' page.
         request.session['my_shipping'] = my_shipping
 
+        # Gather Order Information:
+        # 'shipping_full_name' and 'shipping_email' are got from 'ShippingForm' of forms.py of this app.
+        # We need 'full_name', 'email', 'shipping_address' and 'amount_paid' because they are fields in the Order model of this app in models.py.
+        full_name = my_shipping['shipping_full_name']
+        email = my_shipping['shipping_email']
+
+        # Create Shipping Address from session info:
+        # We used f"" string because the data is much:
+        shipping_address = f"{my_shipping['shipping_address1']}\n{my_shipping['shipping_address2']}\n{my_shipping['shipping_city']}\n{my_shipping['shipping_state']}\n{my_shipping['shipping_zipcode']}\n{my_shipping['shipping_country']}"
+        amount_paid = totals
+
 	    # Get the host:
         host = request.get_host()
 
+        # Create invoice number:
+        my_Invoice = str(uuid.uuid4()) # This ensures no two orders have the same id.
+
 	    # Create Paypal Form Dictionary:#
         paypal_dict = {
-        'business': settings.PAYPAL_RECEIVER_EMAIL,
-        'amount': totals,
-        'item_name': 'Book Order',
-        'no_shipping': '2',  # '2' means that paypal will not use the shipping information supplied by the user during registration at paypal website because the order made may not be for the current user but for another person, e.g his parent.
-        'invoice': str(uuid.uuid4()), # this ensures no two orders have the same id
-        'currency_code': 'USD', # USD for Naira
-        'notify_url': 'https://{}{}'.format(host, reverse("paypal-ipn")),
-        'return_url': 'https://{}{}'.format(host, reverse("payment_success")),
-        'cancel_url': 'https://{}{}'.format(host, reverse("payment_failed")),
+            'business': settings.PAYPAL_RECEIVER_EMAIL,
+            'amount': totals,
+            'item_name': 'Book Order',
+            'no_shipping': '2',  # '2' means that paypal will not use the shipping information supplied by the user during registration at paypal website because the order made may not be for the current user but for another person, e.g his parent.
+            'invoice': my_Invoice, # this ensures no two orders have the same id
+            'currency_code': 'USD', # USD for Naira
+            'notify_url': 'https://{}{}'.format(host, reverse("paypal-ipn")),
+            'return_url': 'https://{}{}'.format(host, reverse("payment_success")),
+            'cancel_url': 'https://{}{}'.format(host, reverse("payment_failed")),
         }
         
 
@@ -304,13 +317,88 @@ def billing_info(request):
 
             # Get the billing form:
             billing_form = PaymentForm()
+
+
+            # logged in
+            user = request.user
+
+            # Create Order
+            create_order = Order(user=user, full_name=full_name, email=email, shipping_address=shipping_address, amount_paid=amount_paid, invoice=my_Invoice)
+            create_order.save()
+
+            # Add order items:
+
+            # Get the order ID:
+            order_id = create_order.pk
+
+            # Get product info:
+            for product in cart_products():
+
+                # Get product ID:
+                product_id = product.id
+
+                # Get product price:
+                if product.is_sale:
+                    price = product.sale_price
+                else:
+                    price = product.price
+
+                # Get quantity:
+                # remember that 'quantity'(that is 'cart.get_quants') in the above is given as 'self.cart' in 'cart.py' which is a key-value pair:
+                # remember that for dictionaries, when looped we use: '.items':
+                for key, value in quantities().items():
+                    if int(key) == product_id:
+                        # Create Order Item:
+                        order_item = OrderItem(order_id=order_id, product_id=product_id, user=user, quantity=value, price=price)
+                        order_item.save()
+
+
+            # Delete Cart from Database(old_cart field):
+            current_user = Profile.objects.filter(user__id=request.user.id)
+
+            # Delete Shopping Cart in Database(old_cart field):
+            current_user.update(old_cart="")
+            
             return render(request, 'payment/billing_info.html', {'paypal_form':paypal_form, 'cart_products': cart_products, 'quantities': quantities, 'totals': totals, 'shipping_info': request.POST, 'billing_form': billing_form})
+    
         else:
+            # not logged in:
+            # Create Order
+            # No 'user' here because we are not logged in here.
+            create_order = Order(full_name=full_name, email=email, shipping_address=shipping_address, amount_paid=amount_paid, invoice=my_Invoice)
+            create_order.save()
+
+            # Add order items:
+            order_id = create_order.pk
+
+            # Get product info:
+            for product in cart_products():
+
+                # Get product ID:
+                product_id = product.id
+
+                # Get product price:
+                if product.is_sale:
+                    price = product.sale_price
+                else:
+                    price = product.price
+
+                # Get quantity:
+                # remember that 'quantity'(that is 'cart.get_quants') in the above is given as 'self.cart' in 'cart.py' which is a key-value pair:
+                # remember that for dictionaries, when looped we use: '.items':
+                for key, value in quantities().items():
+                    if int(key) == product_id:
+                        # Create Order Item:
+                        order_item = OrderItem(order_id=order_id, product_id=product_id, quantity=value, price=price)
+                        order_item.save()
+            
+
+            # Not logged in:
+            # Get the Billing Form:
             billing_form = PaymentForm()
             return render(request, 'payment/billing_info.html', {'paypal_form':paypal_form, 'cart_products': cart_products, 'quantities': quantities, 'totals': totals, 'shipping_info': request.POST, 'billing_form': billing_form})
-
-        # shipping_form = request.POST
-        # return render(request, 'payment/billing_info.html', {'cart_products': cart_products, 'quantities': quantities, 'totals': totals, 'shipping_form': shipping_form})
+        
+        
     else:
         messages.error(request, 'Access Denied!')
         return redirect('home')
@@ -348,6 +436,25 @@ def checkout(request):
 
 
 def payment_success(request):
+    # Get The Cart:
+    cart = Cart(request)
+
+    # Get the products in the cart:
+    cart_products = cart.get_prods
+    quantities = cart.get_quants
+    totals = cart.cart_total()
+
+    # Delete the browser cart:
+    # In function '__init__' which is in the 'cart.py' file of the 'cart' app, we have the session_key which is either already in 'request.session/self.session' or now created'. 
+    # This 'session_key' is created in the self.session which is the current 'request.session'.
+    # 'session_key' is the cart key used to create/store the cart in the session. 
+    # And this session_key is in a dictionary format of key-value pairs (just as self.cart=cart).
+    # So we need to delete the cart from the session using the session_key: 
+    for key in list(request.session.keys()):
+        # 'session' key is referenced from the function '__init__' which is in the 'cart.py' file of the 'cart' app.
+        if key == "session_key":
+            del request.session[key]
+
     return render(request, 'payment/payment_success.html', {})
 
 def payment_failed(request):

@@ -9,6 +9,9 @@ admin.site.register(Order)
 admin.site.register(OrderItem)
 
 
+# Here we are going to create an inline for the OrderItem model so that it can be displayed in the Order model in the admin panel since there is a foreign key connecting them.
+# The OrderItem model is a child of the Order model, so we can use an inline to display it in the Order model in the admin panel.
+
 # Create an OrderItem Inline:
 class OrderItemInline(admin.StackedInline):
     model = OrderItem
@@ -27,7 +30,7 @@ class OrderAdmin(admin.ModelAdmin):
     # 'readonly_fields' is a list of fields that will be displayed as read-only in the admin panel:
     # so the 'date_ordered' field will be displayed as read-only(without the capacity to edit it) in the admin panel:
     readonly_fields = ["date_ordered"]
-    fields = ["user", "full_name", "email", "shipping_address", "amount_paid", "date_ordered", "shipped", "date_shipped"]
+    fields = ["user", "full_name", "email", "shipping_address", "amount_paid", "date_ordered", "shipped", "date_shipped", "invoice", "paid"]
     inlines = [OrderItemInline]
 
 
